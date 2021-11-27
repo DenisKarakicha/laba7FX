@@ -16,7 +16,11 @@ public class HelloApplication extends Application {
         Scene scene = new Scene(fxmlLoader.load());
         stage.setTitle("Breaking bad");
         stage.setScene(scene);
+        stage.sizeToScene();
         stage.show();
+        stage.setMinHeight(800);
+        stage.setMinWidth(1280);
+
     }
 
     public static void main(String[] args) {

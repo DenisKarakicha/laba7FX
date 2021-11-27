@@ -2,6 +2,7 @@ package com.example.laba7fx;
 
 
 import javafx.fxml.FXML;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
@@ -29,11 +30,11 @@ public class Controller {
 
     public void loadTable() {
         GetJson jsonGetter = new GetJson();
-        GetJson.url = "https://www.breakingbadapi1.com/api/quotes";
+        GetJson.url = "https://www.breakingbadapi.com/api/quotes";
         jsonGetter.run();
 
         String jsonString = jsonGetter.jsonIn;
-        if (jsonString != "Api not found!") {
+        if (!jsonString.equalsIgnoreCase("Api not found!")) {
             Object tempObj = null;
             try {
                 tempObj = new JSONParser().parse(jsonString);
@@ -43,6 +44,7 @@ public class Controller {
 
             JSONArray jsonArray = (JSONArray) tempObj;
             QuotesObservableList quotes = new QuotesObservableList();
+            assert jsonArray != null;
             for (Object jsonObject : jsonArray) {
                 JSONObject getQuote = (JSONObject) jsonObject;
                 String quote = (String) getQuote.get("quote");
@@ -60,10 +62,14 @@ public class Controller {
 
 
             tableId.setItems(quotes.getObsList());
+            tableId.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+
             correctLabel.setText("Данные успешно загружены!");
+
         } else {
             correctLabel.setText("Данные не доступны!");
         }
+
 
     }
 

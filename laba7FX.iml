@@ -37,5 +37,6 @@
     <orderEntry type="library" scope="TEST" name="Maven: org.junit.platform:junit-platform-engine:1.7.1" level="project" />
     <orderEntry type="library" name="jackson-annotations-2.13.0-rc1" level="project" />
     <orderEntry type="library" name="json-simple-1.1.1" level="project" />
+    <orderEntry type="library" name="mysql-connector-java-8.0.27" level="project" />
   </component>
 </module>

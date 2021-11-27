@@ -13,6 +13,7 @@ module com.example.laba7fx {
     requires com.fasterxml.jackson.core;
     requires com.fasterxml.jackson.databind;
     requires json.simple;
+    requires java.sql;
 
 
     opens com.example.laba7fx to javafx.fxml;

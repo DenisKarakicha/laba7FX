@@ -53,9 +53,4 @@ public class Quote implements Serializable {
         this.series = series;
     }
 
-    /*public static Comparator<Quote> byQuoteAsc = Comparator.comparing(Quote::getQuote);
-    public static Comparator<Quote> byQuoteDesc = (o1 , o2) -> o2.quote.compareTo(o1.quote);
-    public static Comparator<Quote> byTemp = Comparator.comparing(Quote::getAuthor).thenComparing(Quote::getQuote);*/
-
-
 }

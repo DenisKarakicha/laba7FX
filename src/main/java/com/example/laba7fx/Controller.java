@@ -1,18 +1,30 @@
 package com.example.laba7fx;
 
 
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
-import javafx.scene.control.Label;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
+import javafx.fxml.Initializable;
+import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
+import java.net.URL;
+import java.sql.SQLException;
+import java.util.ResourceBundle;
 
-public class Controller {
 
+public class Controller implements Initializable {
+
+    private DataBase dataBase;
+    private String[] columns = {"quoteID","quote","author","series"};
+    @FXML
+    private ChoiceBox<String> choiceBoxId;
+    @FXML
+    private TextField searchTextField;
+    @FXML
+    private CheckBox checkSql;
     @FXML
     private Label correctLabel;
     @FXML
@@ -26,14 +38,19 @@ public class Controller {
     @FXML
     private TableColumn<Quote, String> series;
 
+    public boolean connectDataBase() {
+        dataBase = new DataBase("quotes");
+        return dataBase.Connect();
+    }
 
     public void loadTable() {
         GetJson jsonGetter = new GetJson();
-        GetJson.url = "https://www.breakingbadapi1.com/api/quotes";
+        GetJson.url = "https://www.breakingbadapi.com/api/quotes";
         jsonGetter.run();
 
         String jsonString = jsonGetter.jsonIn;
-        if (jsonString != "Api not found!") {
+        if (!jsonString.equalsIgnoreCase("Api not found!")) {
+            boolean correctConnect = connectDataBase();
             Object tempObj = null;
             try {
                 tempObj = new JSONParser().parse(jsonString);
@@ -43,12 +60,20 @@ public class Controller {
 
             JSONArray jsonArray = (JSONArray) tempObj;
             QuotesObservableList quotes = new QuotesObservableList();
+            assert jsonArray != null;
             for (Object jsonObject : jsonArray) {
                 JSONObject getQuote = (JSONObject) jsonObject;
                 String quote = (String) getQuote.get("quote");
                 String author = (String) getQuote.get("author");
                 String series = (String) getQuote.get("series");
                 Long quoteID = (Long) getQuote.get("quote_id");
+                if (checkSql.isSelected() && correctConnect) {
+                    try {
+                        dataBase.insert("INSERT INTO m_quotes(quoteID, quote, author, series) VALUES ('" + quoteID + "','" + quote.replace("'", "’") + "','" + author + "','" + series + "')");
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                    }
+                }
                 Quote newQuote = new Quote(quote, author, series, quoteID);
                 quotes.add(newQuote);
             }
@@ -60,11 +85,43 @@ public class Controller {
 
 
             tableId.setItems(quotes.getObsList());
-            correctLabel.setText("Данные успешно загружены!");
+            tableId.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+
+            if (checkSql.isSelected() && !correctConnect)
+                correctLabel.setText("Error, no database connection");
+            else
+                correctLabel.setText("Data loaded successfully");
+
+
         } else {
-            correctLabel.setText("Данные не доступны!");
+            correctLabel.setText("Data not available!");
         }
 
     }
 
+    public void loadSearchQuery() throws SQLException {
+        if (connectDataBase()) {
+            String searchСolumn = choiceBoxId.getValue();
+            ObservableList searchQuotes = dataBase.search(searchTextField.getText(), searchСolumn);
+            tableId.setItems(searchQuotes);
+            correctLabel.setText("All found requests!");
+        }
+        else
+            correctLabel.setText("Error, no database connection");
+
+    }
+
+    public void onDeleteSql() throws SQLException {
+        if (connectDataBase()) {
+            dataBase.delete("TRUNCATE TABLE `m_quotes`");
+            correctLabel.setText("The table is clean!");
+        }
+        else
+            correctLabel.setText("Error, no database connection");
+    }
+
+    @Override
+    public void initialize(URL url, ResourceBundle resourceBundle) {
+        choiceBoxId.getItems().addAll(columns);
+    }
 }

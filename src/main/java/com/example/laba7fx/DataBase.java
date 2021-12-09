@@ -19,7 +19,7 @@ public class DataBase {
 
     public DataBase(String DBname) {
         this.DBname = DBname;
-        url = "jdbc:mysql://localhost:3306/" + DBname;
+        url = "jdbc:mysql://localhost:3309/" + DBname;
         con = null;
     }
 

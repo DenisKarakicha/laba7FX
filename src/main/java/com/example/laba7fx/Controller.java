@@ -18,7 +18,7 @@ import java.util.ResourceBundle;
 public class Controller implements Initializable {
 
     private DataBase dataBase;
-    private String[] columns = {"quoteID","quote","author","series"};
+    private String[] columns = {"quoteID", "quote", "author", "series"};
     @FXML
     private ChoiceBox<String> choiceBoxId;
     @FXML
@@ -99,25 +99,26 @@ public class Controller implements Initializable {
 
     }
 
-    public void loadSearchQuery() throws SQLException {
-        if (connectDataBase()) {
+    public void loadSearchQuery() {
+        try {
             String searchСolumn = choiceBoxId.getValue();
             ObservableList searchQuotes = dataBase.search(searchTextField.getText(), searchСolumn);
             tableId.setItems(searchQuotes);
             correctLabel.setText("All found requests!");
-        }
-        else
+        } catch (SQLException e) {
             correctLabel.setText("Error, no database connection");
-
+            e.printStackTrace();
+        }
     }
 
     public void onDeleteSql() throws SQLException {
-        if (connectDataBase()) {
+        try {
             dataBase.delete("TRUNCATE TABLE `m_quotes`");
             correctLabel.setText("The table is clean!");
-        }
-        else
+        } catch (SQLException e) {
             correctLabel.setText("Error, no database connection");
+            e.printStackTrace();
+        }
     }
 
     @Override
